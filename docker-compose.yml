@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    command:
+      [
+        "flask",
+        "run",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5000",
+        "--reload",
+        "--debugger",
+      ]
+    environment:
+      FLASK_APP: app:create_app()
+      ENV: development
+      DEBUG: true
+      # Do not store passwords in git the in real-world setting!
+      SQLALCHEMY_DATABASE_URI: postgresql://db:password@db:5432/db
+  db:
+    image: postgres:13.4-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=db
+      # Do not store passwords in git the in real-world setting!
+      - POSTGRES_PASSWORD=password
+
+volumes:
+  pg_data:

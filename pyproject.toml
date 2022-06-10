@@ -1,0 +1,61 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Filips Nastins <nastinsfilips@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = {extras = ["async"], version = "^2.1.2"}
+Flask-SQLAlchemy = "^2.5.1"
+SQLAlchemy = "^1.4.37"
+gunicorn = "^20.1.0"
+psycopg2 = "^2.9.3"
+pydantic = "^1.9.1"
+structlog = "^21.5.0"
+
+[tool.poetry.dev-dependencies]
+autoflake = "^1.4"
+bandit = "^1.7.4"
+black = "^22.3.0"
+colorama = "^0.4.4"
+flake8 = "^4.0.1"
+isort = "^5.10.1"
+mypy = "^0.961"
+pre-commit = "^2.19.0"
+pylint = "^2.14.1"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+
+[tool.poetry.scripts]
+hooks = "dev_commands:hooks"
+format = "dev_commands:format"
+lint = "dev_commands:lint"
+test = "dev_commands:test"
+test-cov-term = "dev_commands:test_cov_term"
+test-cov-html = "dev_commands:test_cov_html"
+test-ci = "dev_commands:test_ci"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+junit_family = "xunit2"
+testpaths = [
+    "tests"
+]
+norecursedirs = [
+    ".venv",
+    "__pycache__",
+    ".git"
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
