@@ -24,6 +24,8 @@ services:
       DEBUG: true
       # Do not store passwords in git the in real-world setting!
       SQLALCHEMY_DATABASE_URI: postgresql://db:password@db:5432/db
+      SQLALCHEMY_POOL_SIZE: 10
+      SQLALCHEMY_MAX_OVERFLOW: 0
   db:
     image: postgres:13.4-alpine
     ports:

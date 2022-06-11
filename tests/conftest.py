@@ -1,10 +1,29 @@
 import pytest
+from flask import Flask
 from pytest import MonkeyPatch
 
+from app import create_app, db
 
-@pytest.fixture(name="set_envvars_for_testing", scope="session")
-def set_envvars_for_testing_fixture(monkeypatch_session: MonkeyPatch) -> None:
-    monkeypatch_session.setenv("ENV", "testing")
-    monkeypatch_session.setenv("DEBUG", "false")
-    monkeypatch_session.setenv("TESTING", "true")
-    monkeypatch_session.setenv("SQLALCHEMY_DATABASE_URI", "sqlite://")
+TEST_DATA_SQL_PATH = "testdata/data.sql"
+
+
+@pytest.fixture(name="set_envvars_for_testing", autouse=True)
+def set_envvars_for_testing_fixture(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setenv("ENV", "testing")
+    monkeypatch.setenv("DEBUG", "false")
+    monkeypatch.setenv("TESTING", "true")
+    monkeypatch.setenv("SQLALCHEMY_DATABASE_URI", "sqlite://")
+
+
+@pytest.fixture(name="app")
+def app_fixture() -> Flask:
+    app = create_app()
+    with app.app_context():
+        db.create_all()
+
+    return app
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()

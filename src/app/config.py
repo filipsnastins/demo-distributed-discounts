@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import BaseSettings
 
@@ -19,6 +20,7 @@ class Settings(BaseSettings):
     PORT: int = 5000
 
     SQLALCHEMY_DATABASE_URI: str
-    SQLALCHEMY_POOL_SIZE: int = 10
-    SQLALCHEMY_MAX_OVERFLOW: int = 0
+    SQLALCHEMY_POOL_SIZE: Optional[int] = None
+    SQLALCHEMY_MAX_OVERFLOW: Optional[int] = None
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+    SQLALCHEMY_ECHO: bool = False
