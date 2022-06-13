@@ -13,7 +13,7 @@
 
 ## Use case and problem description
 
-- From user perspective:
+- From user perspective
 
   - Allow users to quickly get a discount code from the marketplace.
   - Ensure that the returned code is unique and belongs only to one user.
@@ -136,7 +136,7 @@
 
 - Routes are protected with `Authorization` header.
 - Provide any numeric value in `Authorization` header, e.g. `"Authorization": "123456"`, which represents `user_id`.
-- Value in authorization header mimics JWT and is used as `user_id, e.g., `"Authorization": "123456"`equals to `user_id = 123456`
+- Value in authorization header mimics JWT and is used as `user_id`, e.g., `"Authorization": "123456"` equals to `user_id = 123456`
 
 ### Fetch discount code as a user
 

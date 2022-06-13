@@ -14,7 +14,7 @@ More documentation in [DOCS.md](DOCS.md)
 
 ### With Docker Compose and Poetry
 
-- Required software:
+- Required software
 
   - Python 3.9 or higher
   - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
