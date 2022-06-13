@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import uuid
+
 from . import db
 
 
@@ -11,18 +15,12 @@ class Marketplace(db.Model):
         nullable=False,
     )
     name = db.Column(db.String(256), nullable=False, unique=True, index=True)
-    # Separate table for contacts
     website_url = db.Column(db.String(256), nullable=False)
     is_approved = db.Column(db.Boolean, nullable=False, default=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
-    # Notification settings can be normalized in config table or moved to separate microservice
-    discount_code_fetch_callback_method = db.Column(
-        db.Enum("webhook", "amqp", name="marketplace_discount_code_fetch_callback_method"),
-        nullable=True,
-    )
 
     def __repr__(self):
-        return f"<Marketplace> {self.name}"
+        return f"<Marketplace> {self.id} - {self.name}"
 
 
 class Campaign(db.Model):
@@ -37,26 +35,39 @@ class Campaign(db.Model):
     name = db.Column(db.String(256), nullable=False)
     active_until = db.Column(db.DateTime, nullable=True)
     marketplace_id = db.Column(db.Integer, db.ForeignKey("marketplace.id"), nullable=False)
-
     marketplace = db.relationship("Marketplace", backref="campaigns", lazy=True)
 
     def __repr__(self) -> str:
-        return f"<Campaign> {self.name}"
+        return f"<Campaign> {self.id} - {self.name}"
 
 
 class AvailableDiscountCode(db.Model):
     __tablename__ = "available_discount_codes"
 
-    id = db.Column(db.String(10), primary_key=True, nullable=False)
+    id = db.Column(
+        db.String(10),
+        primary_key=True,
+        # pylint: disable=unnecessary-lambda
+        default=lambda: AvailableDiscountCode.generate_new_code_id(),
+        unique=True,
+        nullable=False,
+    )
     campaign_id = db.Column(
         db.Integer, db.ForeignKey("campaigns.id"), primary_key=True, nullable=False
     )
-
     campaign = db.relationship("Campaign", backref="available_discount_codes", lazy=True)
 
     def __repr__(self):
         return f"<AvailableDiscountCode> {self.id} - {self.campaign_id}"
 
+    @staticmethod
+    def generate_new_code_id() -> str:
+        """Returns new 10 char discount code good enough for demo purposes."""
+        id_1 = str(uuid.uuid4()).upper()
+        id_2 = str(uuid.uuid4()).upper()
+        return id_1[:8] + id_2[:2]
+
+    # In the real-world app, schema returned to the client would be separated from DB model
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -69,22 +80,23 @@ class FetchedDiscountCode(db.Model):
 
     id = db.Column(
         db.String(10),
-        db.ForeignKey("available_discount_codes.id"),
         primary_key=True,
+        unique=True,
         nullable=False,
     )
     campaign_id = db.Column(
         db.Integer, db.ForeignKey("campaigns.id"), primary_key=True, nullable=False
     )
     # Getting user_id from authentication microservice
-    user_id = db.Column(db.Integer, primary_key=True, index=True, nullable=False)
+    user_id = db.Column(db.Integer, primary_key=True, nullable=False)
     is_used = db.Column(db.Boolean, nullable=False, default=False)
-
+    is_fetched_event_sent = db.Column(db.Boolean, nullable=False, default=False)
     campaign = db.relationship("Campaign", backref="fetched_discount_codes", lazy=True)
 
     def __repr__(self) -> str:
         return f"<FetchedDiscountCode> {self.id} - {self.campaign_id} - {self.user_id}"
 
+    # In the real-world app, schema returned to the client would be separated from DB model
     def to_dict(self) -> dict:
         return {
             "id": self.id,

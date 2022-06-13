@@ -4,7 +4,7 @@ import sys
 import structlog
 
 
-def configure_structlog_logging(production: bool = True, log_level: int = logging.INFO) -> None:
+def configure_structlog_logging(is_production: bool = True, log_level: int = logging.INFO) -> None:
     processors = [
         structlog.stdlib.filter_by_level,
         structlog.stdlib.add_logger_name,
@@ -15,7 +15,7 @@ def configure_structlog_logging(production: bool = True, log_level: int = loggin
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
     ]
-    if production:
+    if is_production:
         processors.append(structlog.processors.KeyValueRenderer())
     else:
         processors.extend(

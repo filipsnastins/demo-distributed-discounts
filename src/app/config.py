@@ -24,3 +24,9 @@ class Settings(BaseSettings):
     SQLALCHEMY_MAX_OVERFLOW: Optional[int] = None
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     SQLALCHEMY_ECHO: bool = False
+
+    DISCOUNT_CODE_GENERATION_COMMIT_BATCH: int = 100000
+
+    @property
+    def is_production(self) -> bool:
+        return bool(self.ENV == "production")

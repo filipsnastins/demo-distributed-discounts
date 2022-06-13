@@ -14,10 +14,6 @@ repos:
       - id: mixed-line-ending
       - id: fix-byte-order-marker
       - id: trailing-whitespace
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: b72d1808dfe51b669ef91d6abf8b904505c22c9b
-    hooks:
-      - id: markdownlint_docker
   - repo: https://github.com/hadolint/hadolint
     rev: v2.8.0
     hooks:

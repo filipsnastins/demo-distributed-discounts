@@ -1,6 +1,6 @@
 """Global error handlers return JSON error with keys:
   - error_code
-  - message
+  - error_message
 """
 from typing import Optional, Union
 
@@ -10,10 +10,9 @@ from structlog import get_logger
 from werkzeug.exceptions import HTTPException, InternalServerError
 from werkzeug.http import HTTP_STATUS_CODES
 
-from app.errors.exceptions import AppError
-
 from .. import db
 from . import bp
+from .exceptions import AppError
 
 logger = get_logger(__name__)
 
@@ -31,13 +30,13 @@ def api_error_response(
 
 @bp.app_errorhandler(HTTPException)
 def http_exception(exc: HTTPException) -> Response:
-    logger.error("http_error", http_error_code=exc.code)
     error_code = HTTP_STATUS_CODES.get(exc.code, "Unknown HTTP error")
+    logger.error("http_error", error_code=error_code, error_message=str(exc), status_code=exc.code)
     return api_error_response(error_code=error_code, error_message=str(exc), status_code=exc.code)
 
 
 @bp.app_errorhandler(AppError)
-def handle_dds_error(exc: AppError):
+def handle_app_error(exc: AppError):
     db.session.rollback()
     logger.error(
         "app_error",

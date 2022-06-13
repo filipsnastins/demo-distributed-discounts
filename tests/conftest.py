@@ -4,8 +4,6 @@ from pytest import MonkeyPatch
 
 from app import create_app, db
 
-TEST_DATA_SQL_PATH = "testdata/data.sql"
-
 
 @pytest.fixture(name="set_envvars_for_testing", autouse=True)
 def set_envvars_for_testing_fixture(monkeypatch: MonkeyPatch) -> None:

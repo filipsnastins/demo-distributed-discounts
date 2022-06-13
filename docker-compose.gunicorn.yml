@@ -7,10 +7,26 @@ services:
       - 5000:5000
     volumes:
       - .:/app
-    command: ['flask', 'run', '--host', '0.0.0.0', '--port', '5000', '--reload', '--debugger']
+    # Gunicorn logs are written to ./access.log and error.log files
+    command:
+      [
+        'gunicorn',
+        '-c',
+        'deploy/gunicorn_config.py',
+        '--workers',
+        '4',
+        '--access-logfile',
+        '/app/access.log',
+        '--error-logfile',
+        '/app/error.log',
+        '--log-level',
+        'debug',
+        '--capture-output',
+        'app:create_app()',
+      ]
     environment:
       FLASK_APP: app:create_app()
-      ENV: development
+      ENV: production
       # Do not store passwords in git the in real-world setting!
       SQLALCHEMY_DATABASE_URI: postgresql://db:password@db:5432/db
       SQLALCHEMY_POOL_SIZE: 30
