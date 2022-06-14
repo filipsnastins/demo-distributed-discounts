@@ -52,6 +52,12 @@
 
   - Concurrent requests will fetch the next available row and not block each other.
 
+![Authentication](/assets/architecture/01_auth.png)
+
+![Fetch discount code](/assets/architecture/02_fetch_discount_code.png)
+
+![Generate discount codes from the marketplace](/assets/architecture/03_generate_discount_codes.png)
+
 ## Concurrency tests with locust
 
 - Tested locally on a laptop with Docker Compose
@@ -83,11 +89,11 @@
   id='5EA3306872' campaign_id=1 user_id='21274989' event='discount_code_created' timestamp='2022-06-12T18:15:06.715487'
   ```
 
-  ![No locks, no unique constraints - locust](/assets/01_without_lock_without_unique_locust.png)
+  ![No locks, no unique constraints - locust](/assets/concurrency/01_without_lock_without_unique_locust.png)
 
   - More codes issued than available on the market. System fails silently.
 
-  ![No locks, no unique constraints - sql](/assets/01_without_lock_without_unique_sql.png)
+  ![No locks, no unique constraints - sql](/assets/concurrency/01_without_lock_without_unique_sql.png)
 
 - After making discount code id unique in the table, immediately getting unique constraint errors.
 
@@ -98,14 +104,14 @@
 
   - System fails fast, but doesn't support scaling.
 
-  ![No locks, with unique constraint - locust](/assets/02_without_lock_with_unique_locust.png)
+  ![No locks, with unique constraint - locust](/assets/concurrency/02_without_lock_with_unique_locust.png)
 
 - With `FOR UPDATE SKIP LOCKED` and unique constraints system behaves as expected, issuing one
   discount code per user.
 
-  ![With locks, with unique constraint - locust](/assets/03_with_locks_with_unique_locust.png)
+  ![With locks, with unique constraint - locust](/assets/concurrency/03_with_locks_with_unique_locust.png)
 
-  ![With locks, with unique constraint - sql](/assets/03_with_locks_with_unique_sql.png)
+  ![With locks, with unique constraint - sql](/assets/concurrency/03_with_locks_with_unique_sql.png)
 
 ## Limitations and further improvements
 
