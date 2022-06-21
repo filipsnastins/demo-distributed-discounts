@@ -42,10 +42,12 @@ def create_discount_code(
         campaign_id=available_discount_code.campaign_id,
         user_id=user_id,
     )
+
     db.session.delete(available_discount_code)
     db.session.add(fetched_discount_code)
     db.session.commit()
 
+    # limitation: handle error if message queue is unavailable and retry message population
     if code_fetched_event:
         code_fetched_event.submit(discount_code=fetched_discount_code)
 

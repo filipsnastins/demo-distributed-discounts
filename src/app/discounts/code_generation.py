@@ -37,6 +37,9 @@ def __generate_discount_codes_job(
     flush_counter = 0
     for _ in range(discount_codes_count):
         discount_code = AvailableDiscountCode(campaign_id=campaign.id)
+        # if program would fail in the middle of the execution,
+        # rows would be already committed to the database
+        # one commit batch - one async event
         db.session.add(discount_code)
         flush_counter += 1
         if flush_counter > commit_batch:

@@ -13,6 +13,10 @@ from app.models import AvailableDiscountCode, Campaign, FetchedDiscountCode, Mar
 TEST_CAMPAIGN_ID = "1"
 TEST_USER_ID = "123456"
 
+# comment: design a system as a state machine for easier testing
+# put a system in some state, run the test and observe how the state changes
+# might help to isolate test cases
+
 
 @pytest.fixture(name="create_test_discount_codes", autouse=True)
 def create_test_discount_codes_fixture(app: Flask):
