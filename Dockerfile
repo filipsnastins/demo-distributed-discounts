@@ -1,4 +1,4 @@
-FROM python:3.9.13-slim-bullseye AS python
+FROM python:3.10-slim-bullseye AS python
 ARG VIRTUAL_ENV=/opt/venv
 WORKDIR /app
 RUN addgroup --gid 1001 app; \
@@ -11,19 +11,20 @@ ENV VIRTUAL_ENV=$VIRTUAL_ENV
 ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
 FROM python AS build-base
-ARG PIP_VERSION=22.1.2
-ARG POETRY_VERSION=1.1.13
+ARG PIP_VERSION=24.0.0
+ARG POETRY_VERSION=1.7.1
 RUN python -m pip install --no-cache-dir -U \
   "pip==$PIP_VERSION" \
-  "poetry==$POETRY_VERSION"; \
+  "poetry==$POETRY_VERSION" \
+  wheel \
+  setuptools; \
   virtualenv "$VIRTUAL_ENV"
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-dev
 
 FROM build-base AS dist
 COPY . .
-RUN chmod +x docker-entrypoint.sh; \
-  poetry build; \
+RUN poetry build; \
   poetry install --no-dev
 
 FROM build-base AS test
@@ -40,6 +41,7 @@ COPY --from=test /app/test_results ./test_results
 COPY --from=dist /opt/venv /opt/venv
 COPY --from=dist /app .
 USER app
+RUN chmod +x docker-entrypoint.sh
 ENV TZ=$TZ
 ENV HOST=$HOST
 ENV PORT=$PORT
